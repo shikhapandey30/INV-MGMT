@@ -7,25 +7,24 @@ export const userActions = {
     login,
     logout,
     register,
-    getAll,
+    getAllwarehouse,
     delete: _delete
 };
 
 function login(username, password) {
     return dispatch => {
-        dispatch(request({ username }));
-
-        userService.login(username, password)
-            .then(
-                user => { 
-                    dispatch(success(user));
-                    history.push('/');
-                },
-                error => {
-                    dispatch(failure(error.toString()));
-                    dispatch(alertActions.error(error.toString()));
-                }
-            );
+      dispatch(request({ username }));
+      userService.login(username, password)
+        .then(
+          user => { 
+              dispatch(success(user));
+              history.push('/');
+          },
+          error => {
+              dispatch(failure(error.toString()));
+              dispatch(alertActions.error(error.toString()));
+          }
+        );
     };
 
     function request(user) { return { type: userConstants.LOGIN_REQUEST, user } }
@@ -43,17 +42,17 @@ function register(user) {
         dispatch(request(user));
 
         userService.register(user)
-            .then(
-                user => { 
-                    dispatch(success());
-                    history.push('/login');
-                    dispatch(alertActions.success('Registration successful'));
-                },
-                error => {
-                    dispatch(failure(error.toString()));
-                    dispatch(alertActions.error(error.toString()));
-                }
-            );
+          .then(
+            user => { 
+                dispatch(success());
+                history.push('/login');
+                dispatch(alertActions.success('Registration successful'));
+            },
+            error => {
+                dispatch(failure(error.toString()));
+                dispatch(alertActions.error(error.toString()));
+            }
+          );
     };
 
     function request(user) { return { type: userConstants.REGISTER_REQUEST, user } }
@@ -61,23 +60,23 @@ function register(user) {
     function failure(error) { return { type: userConstants.REGISTER_FAILURE, error } }
 }
 
-function getAll() {
+function getAllwarehouse() {
     return dispatch => {
         dispatch(request());
-
-        userService.getAll()
+        userService.getAllwarehouse()
             .then(
-                users => dispatch(success(users)),
+                allwarehouses => dispatch(success(allwarehouses)),
                 error => dispatch(failure(error.toString()))
             );
     };
 
-    function request() { return { type: userConstants.GETALL_REQUEST } }
-    function success(users) { return { type: userConstants.GETALL_SUCCESS, users } }
-    function failure(error) { return { type: userConstants.GETALL_FAILURE, error } }
+    function request() { return { type: userConstants.GETALLWAREHOUSE_REQUEST } }
+    function success(allwarehouses) { return { type: userConstants.GETALLWAREHOUSE_SUCCESS, allwarehouses } }
+    function failure(error) { return { type: userConstants.GETALLWAREHOUSE, error } }
 }
 
-// prefixed function name with underscore because delete is a reserved word in javascript
+
+
 function _delete(id) {
     return dispatch => {
         dispatch(request(id));

@@ -17,12 +17,15 @@ module.exports = {
         template: './src/index.html'
     })],
     devServer: {
-        historyApiFallback: true
+        historyApiFallback: true,
+       https: false,       
     },
+    
     externals: {
         // global app config object
         config: JSON.stringify({
-            apiUrl: 'http://localhost:4000'
+            apiUrl: 'http://18.217.112.188:8084/warehouse_user'
         })
     }
 }
+

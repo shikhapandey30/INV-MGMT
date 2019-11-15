@@ -1,104 +1,145 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
 import { connect } from 'react-redux';
-
 import { userActions } from '../_actions';
 
 class RegisterPage extends React.Component {
-    constructor(props) {
-        super(props);
+  constructor(props) {
+      super(props);
 
-        this.state = {
-            user: {
-                firstName: '',
-                lastName: '',
-                username: '',
-                password: ''
-            },
-            submitted: false
-        };
+      this.state = {
+          user: {
+              first_name: '',
+              second_name: '',
+              email: '',
+              password: ''
+          },
+          submitted: false
+      };
 
-        this.handleChange = this.handleChange.bind(this);
-        this.handleSubmit = this.handleSubmit.bind(this);
+      this.handleChange = this.handleChange.bind(this);
+      this.handleSubmit = this.handleSubmit.bind(this);
+      this.responseFacebook = this.responseFacebook.bind(this);
+      this.onSuccess = this.onSuccess.bind(this);
+  }
+
+  handleChange(event) {
+      const { name, value } = event.target;
+      const { user } = this.state;
+      this.setState({ user: { ...user, [name]: value } });
+  }
+
+  handleSubmit(event) {
+      event.preventDefault();
+
+      this.setState({ submitted: true });
+      const { user } = this.state;
+      const { dispatch } = this.props;
+     
+      if (user.first_name && user.second_name && user.email && user.password) {
+          dispatch(userActions.register(user));
+      }
+  }
+
+  onSuccess(response) {
+    const token = response.headers.get('x-auth-token');
+    response.json().then(user => {
+      if (token) {
+        this.setState({isAuthenticated: true, user: user, token: token});
+      }
+    });
+  };
+
+  onFailed(error){
+    alert(error);
+  };
+
+  responseFacebook(responseuser) {
+    console.log("Fbreponse", responseuser)
+    const { dispatch } = this.props;
+    if (responseuser && responseuser.email) {
+      dispatch(userActions.fblogin(responseuser.email, responseuser.accessToken, responseuser.userID, "Facebook"));
     }
 
-    handleChange(event) {
-        const { name, value } = event.target;
-        const { user } = this.state;
-        this.setState({
-            user: {
-                ...user,
-                [name]: value
-            }
-        });
-    }
-
-    handleSubmit(event) {
-        event.preventDefault();
-
-        this.setState({ submitted: true });
-        const { user } = this.state;
-        if (user.firstName && user.lastName && user.username && user.password) {
-            this.props.register(user);
-        }
-    }
+  }
 
     render() {
-        const { registering  } = this.props;
-        const { user, submitted } = this.state;
-        return (
-            <div className="col-md-6 col-md-offset-3">
-                <h2>Register</h2>
-                <form name="form" onSubmit={this.handleSubmit}>
-                    <div className={'form-group' + (submitted && !user.firstName ? ' has-error' : '')}>
-                        <label htmlFor="firstName">First Name</label>
-                        <input type="text" className="form-control" name="firstName" value={user.firstName} onChange={this.handleChange} />
-                        {submitted && !user.firstName &&
-                            <div className="help-block">First Name is required</div>
-                        }
+      const { registering  } = this.props;
+      const { user, submitted } = this.state;
+      return (
+        <div id="login">
+          <div className="container">
+            <div id="login-row" className="row justify-content-center align-items-center">
+              <div id="login-column" className="col-md-6">
+                <div className="col-md-12 regis">
+                 <form name="form" onSubmit={this.handleSubmit} id="signupform" className="auth-form" role="form">
+                    <input id="ReturnUrl" name="ReturnUrl" type="hidden" />
+                    <h3 className="text-center text-info">Register</h3><hr/>
+                    <div className={'row-input-field' + (submitted && !user.email ? ' has-error' : '')}>
+                     
+                      <label htmlFor="Email" className="text-info">Email:</label>
+                      {submitted && !user.email &&
+                      <div className="help-block">Email Address is required</div>
+                      }
+
+                      <input type="email" className="text-box single-line email form-control" name="email" value={user.email} onChange={this.handleChange} placeholder="Email Address" />
                     </div>
-                    <div className={'form-group' + (submitted && !user.lastName ? ' has-error' : '')}>
-                        <label htmlFor="lastName">Last Name</label>
-                        <input type="text" className="form-control" name="lastName" value={user.lastName} onChange={this.handleChange} />
-                        {submitted && !user.lastName &&
-                            <div className="help-block">Last Name is required</div>
-                        }
+
+                    <div className={'row-input-field' + (submitted && !user.first_name ? ' has-error' : '')}>
+                      <label htmlFor="first_name" className="text-info">First Name:</label>
+                      {submitted && !user.first_name &&
+                      <div className="help-block">First Name is required</div>
+                      }
+
+                      <input type="text" className="text-box single-line email form-control" name="first_name" value={user.first_name} onChange={this.handleChange} placeholder="First Name" />
                     </div>
-                    <div className={'form-group' + (submitted && !user.username ? ' has-error' : '')}>
-                        <label htmlFor="username">Username</label>
-                        <input type="text" className="form-control" name="username" value={user.username} onChange={this.handleChange} />
-                        {submitted && !user.username &&
-                            <div className="help-block">Username is required</div>
-                        }
+
+                    <div className={'row-input-field' + (submitted && !user.second_name ? ' has-error' : '')}>
+                      <label htmlFor="second_name" className="text-info">Last Name:</label>
+                      
+                      {submitted && !user.second_name &&
+                      <div className="help-block">Last Name is required</div>
+                      }
+                      <input type="text" className="text-box single-line email form-control" name="second_name" value={user.second_name} onChange={this.handleChange} placeholder="Last Name" />
                     </div>
-                    <div className={'form-group' + (submitted && !user.password ? ' has-error' : '')}>
-                        <label htmlFor="password">Password</label>
-                        <input type="password" className="form-control" name="password" value={user.password} onChange={this.handleChange} />
-                        {submitted && !user.password &&
-                            <div className="help-block">Password is required</div>
-                        }
+
+                    <div className={'text-box single-line password' + 'form-control' + (submitted && !user.password ? ' has-error' : '')}>
+                      <label htmlFor="Password" className="text-info">Password:</label>
+                      {submitted && !user.password &&
+                      <div className="help-block">Password is required</div>
+                      }
+                      <input type="password" id="login-password" className="text-box form-control" name="password" value={user.password} onChange={this.handleChange} placeholder="Password" />
                     </div>
+
+                    <div className="mb-30">
+                    </div><br/>
+
                     <div className="form-group">
-                        <button className="btn btn-primary">Register</button>
-                        {registering && 
-                            <img src="data:image/gif;base64,R0lGODlhEAAQAPIAAP///wAAAMLCwkJCQgAAAGJiYoKCgpKSkiH/C05FVFNDQVBFMi4wAwEAAAAh/hpDcmVhdGVkIHdpdGggYWpheGxvYWQuaW5mbwAh+QQJCgAAACwAAAAAEAAQAAADMwi63P4wyklrE2MIOggZnAdOmGYJRbExwroUmcG2LmDEwnHQLVsYOd2mBzkYDAdKa+dIAAAh+QQJCgAAACwAAAAAEAAQAAADNAi63P5OjCEgG4QMu7DmikRxQlFUYDEZIGBMRVsaqHwctXXf7WEYB4Ag1xjihkMZsiUkKhIAIfkECQoAAAAsAAAAABAAEAAAAzYIujIjK8pByJDMlFYvBoVjHA70GU7xSUJhmKtwHPAKzLO9HMaoKwJZ7Rf8AYPDDzKpZBqfvwQAIfkECQoAAAAsAAAAABAAEAAAAzMIumIlK8oyhpHsnFZfhYumCYUhDAQxRIdhHBGqRoKw0R8DYlJd8z0fMDgsGo/IpHI5TAAAIfkECQoAAAAsAAAAABAAEAAAAzIIunInK0rnZBTwGPNMgQwmdsNgXGJUlIWEuR5oWUIpz8pAEAMe6TwfwyYsGo/IpFKSAAAh+QQJCgAAACwAAAAAEAAQAAADMwi6IMKQORfjdOe82p4wGccc4CEuQradylesojEMBgsUc2G7sDX3lQGBMLAJibufbSlKAAAh+QQJCgAAACwAAAAAEAAQAAADMgi63P7wCRHZnFVdmgHu2nFwlWCI3WGc3TSWhUFGxTAUkGCbtgENBMJAEJsxgMLWzpEAACH5BAkKAAAALAAAAAAQABAAAAMyCLrc/jDKSatlQtScKdceCAjDII7HcQ4EMTCpyrCuUBjCYRgHVtqlAiB1YhiCnlsRkAAAOwAAAAAAAAAAAA==" />
-                        }
-                        <Link to="/login" className="btn btn-link">Cancel</Link>
+                    <button className="btn btn-info btn-md">Register</button>
+                      {registering &&
+                        <img />
+                      }<hr/>
+                    </div> 
+                    <div className="center">
+                       Already have an account? Click <a className="text-underline" href="/login">here</a>.
                     </div>
-                </form>
+                 </form>
+                </div>
+              </div>
             </div>
-        );
+          </div>
+        </div>            
+
+      );
     }
 }
 
-function mapState(state) {
+function mapStateToProps(state) {
     const { registering } = state.registration;
-    return { registering };
+    return {
+        registering
+    };
 }
 
-const actionCreators = {
-    register: userActions.register
-}
-
-const connectedRegisterPage = connect(mapState, actionCreators)(RegisterPage);
+const connectedRegisterPage = connect(mapStateToProps)(RegisterPage);
 export { connectedRegisterPage as RegisterPage };
