@@ -44,6 +44,21 @@ function getAllwarehouse() {
 }
 
 
+// function getAllwarehouse() {
+//   const requestOptions = {
+//     method: 'POST',
+//     headers: authHeader()
+//   };
+//     return fetch("http://localhost:3000/api/v1/users", requestOptions)
+//     .then(handleResponse)
+//     .then(allwarehouses => {
+//       debugger
+//       console.log("Response",allwarehouses)
+//         return JSON.parse(allwarehouses);
+//     });
+// }
+
+
 function getById(id) {
     const requestOptions = {
         method: 'GET',

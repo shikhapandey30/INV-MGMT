@@ -15,11 +15,6 @@ class WareHouse extends React.Component {
         return (e) => this.props.dispatch(userActions.delete(id));
     }
 
-    fProfile(user) {
-        const { dispatch } = this.props;
-        dispatch(userActions.getAllprofile(user.id));
-    }
-
     render() {
       const { user, users } = this.props;
       const current_user = JSON.parse(localStorage.getItem('singleUser'))
